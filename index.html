@@ -4438,10 +4438,197 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 </div></body>
 
+// <script>
+
+//     // ComfySole Variant-based Redirect Handler
+// // ComfySole Variant-based Redirect Handler
+// (function() {
+//     // URL mapping based on variants
+//     const variantUrls = {
+//         // Size 35-36
+//         '35-36_1x Paar ComfySole': '/checkout/35-36-single',
+//         '35-36_2x Paar ComfySole': '/checkout/35-36-double',
+//         '35-36_3x Paar ComfySole': '/checkout/35-36-triple',
+        
+//         // Size 37-38
+//         '37-38_1x Paar ComfySole': '/checkout/37-38-single',
+//         '37-38_2x Paar ComfySole': '/checkout/37-38-double',
+//         '37-38_3x Paar ComfySole': '/checkout/37-38-triple',
+        
+//         // Size 39-40
+//         '39-40_1x Paar ComfySole': '/checkout/39-40-single',
+//         '39-40_2x Paar ComfySole': '/checkout/39-40-double',
+//         '39-40_3x Paar ComfySole': '/checkout/39-40-triple',
+        
+//         // Size 41-42
+//         '41-42_1x Paar ComfySole': '/checkout/41-42-single',
+//         '41-42_2x Paar ComfySole': '/checkout/41-42-double',
+//         '41-42_3x Paar ComfySole': '/checkout/41-42-triple',
+        
+//         // Size 43-44
+//         '43-44_1x Paar ComfySole': '/checkout/43-44-single',
+//         '43-44_2x Paar ComfySole': '/checkout/43-44-double',
+//         '43-44_3x Paar ComfySole': '/checkout/43-44-triple',
+        
+//         // Size 45-46
+//         '45-46_1x Paar ComfySole': '/checkout/45-46-single',
+//         '45-46_2x Paar ComfySole': '/checkout/45-46-double',
+//         '45-46_3x Paar ComfySole': '/checkout/45-46-triple'
+//     };
+
+//     // Function to get selected variant values
+//     function getSelectedVariants() {
+//         const sizeSelector = document.querySelector('.gf_swatches-selector[data-name="Größe"] .gf_swatch.gf_selected');
+//         const quantitySelector = document.querySelector('.gf_swatches-selector[data-name="Angebot"] .gf_swatch.gf_selected');
+        
+//         const selectedSize = sizeSelector ? sizeSelector.getAttribute('data-value') : null;
+//         const selectedQuantity = quantitySelector ? quantitySelector.getAttribute('data-value') : null;
+        
+//         return { size: selectedSize, quantity: selectedQuantity };
+//     }
+
+//     // Function to generate variant key
+//     function generateVariantKey(size, quantity) {
+//         if (!size || !quantity) return null;
+//         return `${size}_${quantity}`;
+//     }
+
+//     // Function to handle redirect
+//     function handleRedirect() {
+//         const variants = getSelectedVariants();
+//         const variantKey = generateVariantKey(variants.size, variants.quantity);
+        
+//         console.log('Selected variants:', variants);
+//         console.log('Generated variant key:', variantKey);
+        
+//         if (variantKey && variantUrls[variantKey]) {
+//             console.log('Redirecting to:', variantUrls[variantKey]);
+//             // Redirect to the specific URL
+//             window.location.href = variantUrls[variantKey];
+//         } else {
+//             // Fallback - redirect to general checkout or show error
+//             console.warn('No specific URL found for variant:', variantKey);
+//             alert('Bitte wählen Sie eine Größe und Menge aus.');
+//         }
+//     }
+
+//     // Function to update variant selection
+//     function updateVariantSelection(swatchElement) {
+//         const container = swatchElement.closest('.gf_swatches-selector');
+        
+//         // Remove selected class from all swatches in the same container
+//         container.querySelectorAll('.gf_swatch').forEach(swatch => {
+//             swatch.classList.remove('gf_selected');
+//         });
+        
+//         // Add selected class to clicked swatch
+//         swatchElement.classList.add('gf_selected');
+        
+//         // Update radio button if it exists
+//         const radio = swatchElement.querySelector('.gf_swatch_radio');
+//         if (radio) {
+//             radio.checked = true;
+//         }
+//     }
+
+//     // Initialize when DOM is loaded
+//     function initialize() {
+//         // Add click handlers for variant swatches
+//         document.querySelectorAll('.gf_swatch').forEach(swatch => {
+//             swatch.addEventListener('click', function(e) {
+//                 e.preventDefault();
+//                 updateVariantSelection(this);
+//             });
+//         });
+
+//         // Add click handlers for all add to cart elements (both buttons and anchors)
+//         document.querySelectorAll('.gf_gs-button---large, .gf_add-to-cart, .atc-btn button, button[name="add"], a[href*="cart"], .AddToCartText').forEach(element => {
+//             // Enable disabled buttons
+//             if (element.disabled) {
+//                 element.disabled = false;
+//             }
+            
+//             // Clear any existing href for anchor elements - we'll handle redirect manually
+//             if (element.tagName === 'A') {
+//                 element.removeAttribute('href');
+//                 element.style.cursor = 'pointer';
+//             }
+            
+//             element.addEventListener('click', function(e) {
+//                 console.log("clicked element:", element);
+//                 e.preventDefault();
+//                 e.stopPropagation();
+//                 handleRedirect();
+//             });
+//         });
+
+//         // Also handle clicks on parent containers that might contain anchor elements
+//         document.querySelectorAll('[data-key="p-cart-button"], .module-wrap').forEach(wrapper => {
+//             wrapper.addEventListener('click', function(e) {
+//                 // Only handle if clicked element is not already handled and is an anchor or button
+//                 const clickedElement = e.target;
+//                 if (clickedElement.tagName === 'A' || clickedElement.tagName === 'BUTTON' || 
+//                     clickedElement.closest('a') || clickedElement.closest('button')) {
+//                     e.preventDefault();
+//                     e.stopPropagation();
+//                     console.log('Wrapper click handled for:', clickedElement);
+//                     handleRedirect();
+//                 }
+//             });
+//         });
+//     }
+
+//     // Run initialization when DOM is ready
+//     if (document.readyState === 'loading') {
+//         document.addEventListener('DOMContentLoaded', initialize);
+//     } else {
+//         initialize();
+//     }
+
+//     // Alternative: If you need to call this manually or from other scripts
+//     window.ComfySoleRedirect = {
+//         handleRedirect: handleRedirect,
+//         getSelectedVariants: getSelectedVariants,
+//         updateUrls: function(newUrls) {
+//             Object.assign(variantUrls, newUrls);
+//         }
+//     };
+// })();
+
+// // Optional: CSS to ensure proper visual feedback
+// const style = document.createElement('style');
+// style.textContent = `
+//     .gf_swatch {
+//         cursor: pointer;
+//         transition: all 0.3s ease;
+//     }
+    
+//     .gf_swatch.gf_selected {
+//         opacity: 1;
+//         border-color: #007bff;
+//         background-color: #f8f9fa;
+//     }
+    
+//     .gf_swatch:not(.gf_selected) {
+//         opacity: 0.7;
+//     }
+    
+//     .gf_swatch:hover {
+//         opacity: 1;
+//         transform: scale(1.02);
+//     }
+    
+//     .gf_add-to-cart {
+//         cursor: pointer;
+//     }
+// `;
+// document.head.appendChild(style);
+    
+// </script>
+
 <script>
 
     // ComfySole Variant-based Redirect Handler
-// ComfySole Variant-based Redirect Handler
 (function() {
     // URL mapping based on variants
     const variantUrls = {
@@ -4542,7 +4729,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         });
 
         // Add click handlers for all add to cart elements (both buttons and anchors)
-        document.querySelectorAll('.gf_gs-button---large, .gf_add-to-cart, .atc-btn button, button[name="add"], a[href*="cart"], .AddToCartText').forEach(element => {
+        document.querySelectorAll('.gf_gs-button---large, .gf_add-to-cart, .atc-btn button, button[name="add"], a[href*="cart"], .AddToCartText, .gf_gs-button-cart-button').forEach(element => {
             // Enable disabled buttons
             if (element.disabled) {
                 element.disabled = false;
@@ -4554,27 +4741,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 element.style.cursor = 'pointer';
             }
             
+            // For buttons, prevent form submission
+            if (element.tagName === 'BUTTON') {
+                element.type = 'button'; // Change from submit to button to prevent form submission
+            }
+            
             element.addEventListener('click', function(e) {
                 console.log("clicked element:", element);
                 e.preventDefault();
                 e.stopPropagation();
+                e.stopImmediatePropagation(); // Stop all other event handlers
                 handleRedirect();
-            });
+                return false;
+            }, true); // Use capture phase to intercept before other handlers
         });
 
-        // Also handle clicks on parent containers that might contain anchor elements
-        document.querySelectorAll('[data-key="p-cart-button"], .module-wrap').forEach(wrapper => {
-            wrapper.addEventListener('click', function(e) {
-                // Only handle if clicked element is not already handled and is an anchor or button
-                const clickedElement = e.target;
-                if (clickedElement.tagName === 'A' || clickedElement.tagName === 'BUTTON' || 
-                    clickedElement.closest('a') || clickedElement.closest('button')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Wrapper click handled for:', clickedElement);
-                    handleRedirect();
-                }
-            });
+        // Specifically handle the main add to cart button and its container
+        document.querySelectorAll('.module-wrap[data-key="p-cart-button"], .atc-btn, .module.atc-btn').forEach(container => {
+            // Remove any existing event listeners by cloning and replacing
+            const newContainer = container.cloneNode(true);
+            container.parentNode.replaceChild(newContainer, container);
+            
+            // Add our custom handler
+            newContainer.addEventListener('click', function(e) {
+                console.log('Container click intercepted:', e.target);
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                handleRedirect();
+                return false;
+            }, true);
         });
     }
 
