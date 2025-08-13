@@ -4441,6 +4441,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 
     // ComfySole Variant-based Redirect Handler
+// ComfySole Variant-based Redirect Handler
 (function() {
     // URL mapping based on variants
     const variantUrls = {
@@ -4497,7 +4498,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const variants = getSelectedVariants();
         const variantKey = generateVariantKey(variants.size, variants.quantity);
         
+        console.log('Selected variants:', variants);
+        console.log('Generated variant key:', variantKey);
+        
         if (variantKey && variantUrls[variantKey]) {
+            console.log('Redirecting to:', variantUrls[variantKey]);
             // Redirect to the specific URL
             window.location.href = variantUrls[variantKey];
         } else {
@@ -4536,26 +4541,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             });
         });
 
-        // Add click handlers for all add to cart buttons
-        document.querySelectorAll('.gf_gs-button---large .gf_add-to-cart, .atc-btn button, button[name="add"]').forEach(button => {
-            
-            if (button.disabled){
-                button.disabled = false; // Enable the button if it was disabled
+        // Add click handlers for all add to cart elements (both buttons and anchors)
+        document.querySelectorAll('.gf_gs-button---large, .gf_add-to-cart, .atc-btn button, button[name="add"], a[href*="cart"], .AddToCartText').forEach(element => {
+            // Enable disabled buttons
+            if (element.disabled) {
+                element.disabled = false;
             }
             
-            button.addEventListener('click', function(e) {
-                console.log("button", button);
+            // Clear any existing href for anchor elements - we'll handle redirect manually
+            if (element.tagName === 'A') {
+                element.removeAttribute('href');
+                element.style.cursor = 'pointer';
+            }
+            
+            element.addEventListener('click', function(e) {
+                console.log("clicked element:", element);
                 e.preventDefault();
+                e.stopPropagation();
                 handleRedirect();
             });
         });
 
-        // Also handle clicks on the module wrapper
-        document.querySelectorAll('[data-key="p-cart-button"]').forEach(wrapper => {
+        // Also handle clicks on parent containers that might contain anchor elements
+        document.querySelectorAll('[data-key="p-cart-button"], .module-wrap').forEach(wrapper => {
             wrapper.addEventListener('click', function(e) {
-                // Only handle if clicked element is not already handled
-                if (!e.target.closest('.gf_add-to-cart')) {
+                // Only handle if clicked element is not already handled and is an anchor or button
+                const clickedElement = e.target;
+                if (clickedElement.tagName === 'A' || clickedElement.tagName === 'BUTTON' || 
+                    clickedElement.closest('a') || clickedElement.closest('button')) {
                     e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Wrapper click handled for:', clickedElement);
                     handleRedirect();
                 }
             });
