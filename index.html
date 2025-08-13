@@ -4538,6 +4538,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         // Add click handlers for all add to cart buttons
         document.querySelectorAll('.gf_gs-button---large .gf_add-to-cart, .atc-btn button, button[name="add"]').forEach(button => {
+            if (button.disabled){
+                button.disabled = false; // Ensure button is enabled
+            }
             button.addEventListener('click', function(e) {
                 console.log("button", button);
                 e.preventDefault();
