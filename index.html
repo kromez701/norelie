@@ -4437,4 +4437,207 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 
 </div></body>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', function() {
+    // Define your custom URLs for each variant
+    const variantUrls = {
+        '35-36': 'https://your-custom-url-for-35-36.com',
+        '37-38': 'https://your-custom-url-for-37-38.com',
+        '39-40': 'https://your-custom-url-for-39-40.com',
+        '41-42': 'https://your-custom-url-for-41-42.com',
+        '43-44': 'https://your-custom-url-for-43-44.com',
+        '45-46': 'https://your-custom-url-for-45-46.com'
+    };
+
+    // Define custom prices for each variant
+    const customPrices = {
+        '35-36': '£29.99',
+        '37-38': '£39.99', 
+        '39-40': '£49.99',
+        '41-42': '£29.99',
+        '43-44': '£39.99',
+        '45-46': '£49.99'
+    };
+
+    function updateAllPrices() {
+        // Update prices in all swatches
+        const swatches = document.querySelectorAll('.gf_swatch');
+        
+        swatches.forEach(swatch => {
+            const variantValue = swatch.getAttribute('data-value');
+            if (variantValue && customPrices[variantValue]) {
+                const regularPriceElement = swatch.querySelector('.regular-price');
+                if (regularPriceElement && regularPriceElement.textContent !== customPrices[variantValue]) {
+                    regularPriceElement.textContent = customPrices[variantValue];
+                }
+            }
+        });
+    }
+
+    // Initial price update
+    updateAllPrices();
+
+    function getSelectedVariant() {
+        // Look for the selected swatch (with gf_selected class)
+        const selectedSwatch = document.querySelector('.gf_swatch.gf_selected');
+        
+        if (selectedSwatch) {
+            return selectedSwatch.getAttribute('data-value');
+        }
+        
+        // Fallback: look for checked radio button
+        const checkedRadio = document.querySelector('input[name="swatch_radio"]:checked');
+        if (checkedRadio) {
+            const parentSwatch = checkedRadio.closest('.gf_swatch');
+            if (parentSwatch) {
+                return parentSwatch.getAttribute('data-value');
+            }
+        }
+        
+        return null;
+    }
+
+    function handleAddToCartClick(event) {
+        event.preventDefault(); // Prevent default form submission
+        
+        const selectedVariant = getSelectedVariant();
+        
+        if (selectedVariant && variantUrls[selectedVariant]) {
+            // Show loading state on button
+            const button = event.target.closest('button');
+            const originalText = button.querySelector('.AddToCartText').textContent;
+            button.querySelector('.AddToCartText').textContent = 'Redirecting...';
+            
+            // Redirect after short delay
+            setTimeout(() => {
+                window.location.href = variantUrls[selectedVariant];
+            }, 500);
+        } else {
+            // Fallback URL if no variant is selected or variant not found
+            console.log('No variant selected or variant not found:', selectedVariant);
+            alert('Please select a size before adding to cart.');
+        }
+    }
+
+    // Attach click handlers to all add to cart buttons
+    function attachClickHandlers() {
+        const addToCartButtons = document.querySelectorAll('button.gf_gs-button---large');
+        
+        addToCartButtons.forEach(button => {
+            // Remove existing listeners to prevent duplicates
+            button.removeEventListener('click', handleAddToCartClick);
+            // Add new listener
+            button.addEventListener('click', handleAddToCartClick);
+        });
+    }
+
+    // Initial attachment
+    attachClickHandlers();
+
+    // Re-attach handlers if new buttons are added dynamically
+    const observer = new MutationObserver(function(mutations) {
+        let shouldReattach = false;
+        let shouldUpdatePrices = false;
+        
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach(function(node) {
+                    if (node.nodeType === 1) { // Element node
+                        if (node.classList && node.classList.contains('gf_gs-button---large')) {
+                            shouldReattach = true;
+                        } else if (node.querySelector && node.querySelector('button.gf_gs-button---large')) {
+                            shouldReattach = true;
+                        }
+                        
+                        // Check for price elements or swatches
+                        if (node.classList && (node.classList.contains('gf_swatch') || node.classList.contains('regular-price'))) {
+                            shouldUpdatePrices = true;
+                        } else if (node.querySelector && (node.querySelector('.gf_swatch') || node.querySelector('.regular-price'))) {
+                            shouldUpdatePrices = true;
+                        }
+                    }
+                });
+            } else if (mutation.type === 'characterData' || mutation.type === 'attributes') {
+                // Check if price content changed
+                const target = mutation.target;
+                if (target.nodeType === 1 && target.classList && target.classList.contains('regular-price')) {
+                    shouldUpdatePrices = true;
+                } else if (target.nodeType === 3 && target.parentNode && target.parentNode.classList && target.parentNode.classList.contains('regular-price')) {
+                    shouldUpdatePrices = true;
+                }
+            }
+        });
+        
+        if (shouldReattach) {
+            attachClickHandlers();
+        }
+        
+        if (shouldUpdatePrices) {
+            updateAllPrices();
+        }
+    });
+
+    // Start observing
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true
+    });
+
+    // Run price updates periodically to ensure they stay consistent
+    setInterval(updateAllPrices, 2000);
+
+    // Also handle variant selection changes to update the selected state
+    function handleVariantSelection() {
+        const swatches = document.querySelectorAll('.gf_swatch');
+        
+        swatches.forEach(swatch => {
+            swatch.addEventListener('click', function() {
+                // Remove selected class from all swatches in the same group
+                const parentSelector = this.closest('.gf_swatches-selector');
+                if (parentSelector) {
+                    parentSelector.querySelectorAll('.gf_swatch').forEach(s => {
+                        s.classList.remove('gf_selected');
+                    });
+                }
+                
+                // Add selected class to clicked swatch
+                this.classList.add('gf_selected');
+                
+                // Also check the radio button if present
+                const radio = this.querySelector('input[type="radio"]');
+                if (radio) {
+                    radio.checked = true;
+                }
+            });
+        });
+    }
+
+    // Initialize variant selection handlers
+    handleVariantSelection();
+});
+
+// Alternative method using form submission interception
+document.addEventListener('DOMContentLoaded', function() {
+    // If the buttons are inside forms, intercept form submission
+    document.addEventListener('submit', function(event) {
+        const form = event.target;
+        const submitButton = form.querySelector('button.gf_gs-button---large');
+        
+        if (submitButton) {
+            event.preventDefault();
+            
+            // Trigger the same redirect logic
+            const clickEvent = new Event('click', { bubbles: true });
+            submitButton.dispatchEvent(clickEvent);
+        }
+    });
+});
+    
+    </script>
+
+
 </html>
